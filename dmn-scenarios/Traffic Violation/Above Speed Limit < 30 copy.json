@@ -1,0 +1,10 @@
+{
+    "Driver": {
+        "Points": 10
+    },
+    "Violation": {
+        "Type": "speed",
+        "Actual Speed": 100,
+        "Speed Limit": 120
+    }
+}

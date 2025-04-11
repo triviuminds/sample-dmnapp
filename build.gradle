@@ -1,0 +1,54 @@
+plugins {
+    id 'base'
+    id 'maven-publish'
+    id 'jacoco'
+    id 'net.nemerosa.versioning' version '3.1.0'
+}
+
+def os_name = System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
+
+group 'com.triviuminds.dmn'
+def snapshotName = "${version != 'unspecified'  && version.contains('SNAPSHOT') ? '-SNAPSHOT' : ''}"
+def snapshot = "${versioning.info.branch.equals('main') ? '' : snapshotName}"
+version = "${dmnappVersion != 'unspecified' ? dmnappVersion + snapshot : '1.0.0' + snapshot}"
+
+repositories {
+    maven {
+        url "https://repo1.maven.org/maven2/"
+    }
+}
+
+def args = '-Ddmnapp.version=' + version
+
+task runMavenBuild(type: Exec) {
+    workingDir = rootDir
+    if (os_name.contains("windows")) {
+        commandLine 'mvn.cmd', 'clean', 'verify', args
+    } else {
+        commandLine 'mvn', 'clean', 'verify', args
+    }
+}
+
+task bootRun(type: Exec) {
+    workingDir = rootDir
+    if (os_name.contains("windows")) {
+        commandLine 'mvn.cmd', 'clean', 'spring-boot:run', args
+    } else {
+        commandLine 'mvn', 'clean', 'spring-boot:run', args
+    }
+}
+
+build {
+    dependsOn runMavenBuild
+    doLast {
+        println "copy jar files to build/libs"
+        copy {
+            from "target/${project.name}-${version}.jar"
+            into 'build/libs'
+        }
+        copy {
+            from "target/${project.name}-${version}-dmnapp.jar"
+            into 'build/libs'
+        }
+    }
+}
