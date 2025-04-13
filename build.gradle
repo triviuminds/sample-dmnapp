@@ -18,10 +18,11 @@ repositories {
     }
 }
 
-def args = '-Ddmnapp.version=' + version
+def args = '-Ddmnapp.version=' + version + ' -Ddmn.spec.version=' + dmnSpecVersion + ' -Dapi.spec.name=' + apiSpecName
 
 task runMavenBuild(type: Exec) {
     workingDir = rootDir
+    println("mvn clean verify" + args)
     if (os_name.contains("windows")) {
         commandLine 'mvn.cmd', 'clean', 'verify', args
     } else {
@@ -31,6 +32,7 @@ task runMavenBuild(type: Exec) {
 
 task bootRun(type: Exec) {
     workingDir = rootDir
+    println("mvn clean spring-boot:run" + args)
     if (os_name.contains("windows")) {
         commandLine 'mvn.cmd', 'clean', 'spring-boot:run', args
     } else {
